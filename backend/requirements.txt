@@ -1,0 +1,6 @@
+Flask==3.1.0
+openai==1.59.9
+llama-index==0.12.12
+PyPDF2==3.0.1
+flask-cors==5.0.1
+python-dotenv==1.0.1
