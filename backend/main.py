@@ -60,6 +60,11 @@ def normalize_score(raw_score):
     except:
         return "0"
 
+# Flask route
+@app.route('/')
+def home():
+    return "Welcome to the Resume Analyzer!"
+
 # Flask route to handle file + keyword upload
 @app.route('/analyze', methods=['POST'])
 def analyze_resume():

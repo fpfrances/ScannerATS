@@ -50,10 +50,15 @@ export const Home = ({ handleSubmit, result, setResult }) => {
     try {
       const response = await fetch('https://ats-scanner-9akh.onrender.com/analyze', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         body: formData,
       });
 
       if (!response.ok) {
+        const errorMessage = await response.text();  // Read the error text
+        console.error("Backend error:", errorMessage);
         throw new Error(`Error: ${response.statusText}`);
       }
 
