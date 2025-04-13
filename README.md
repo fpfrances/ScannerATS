@@ -4,7 +4,7 @@ ATS Scanner is a web-based resume analysis tool that helps employers assess cand
 
 ## Frontend Setup with Vite
 
-The frontend of SCANNERATS is built using [Vite](https://vitejs.dev/), a fast build tool and development server for modern web projects.
+The frontend of ScannerATS is built using [Vite](https://vitejs.dev/), a fast build tool and development server for modern web projects.
 
 ## Features
 
