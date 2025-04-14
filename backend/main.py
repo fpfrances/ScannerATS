@@ -60,10 +60,15 @@ def normalize_score(raw_score):
     except:
         return "0"
 
-# Flask route
+# Testpoint home
 @app.route('/')
 def home():
     return "Welcome to the Resume Analyzer!"
+
+# Testpoint health
+@app.route('/health')
+def health_check():
+    return "OK", 200
 
 # Flask route to handle file + keyword upload
 @app.route('/analyze', methods=['POST'])
