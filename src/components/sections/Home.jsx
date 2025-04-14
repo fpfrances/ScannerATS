@@ -73,7 +73,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
       <form className="w-full max-w-5xl" onSubmit={onSubmit}>
         <div className="text-center">
-        <p className="mb-10 mt-10">
+        <p className="mb-7 mt-7">
           This resume evaluation tool uses a language model(through the LlamaIndex framework and OpenAI’s GPT) to simulate how an ATS might evaluate your resume.
           Although it doesn’t exactly replicate corporate ATS systems, it offers a reliable estimate of how well your resume aligns with a job description
           in terms of both technical and soft skills. To achieve optimal results, I recommend using AI to extract both technical and soft skills from a job/qualification description,
@@ -81,7 +81,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </p>
 
           <div
-            className="w-full max-w-sm mx-auto p-13 mt-20 mb-6 border-2 border-dashed border-blue-500 bg-gray-900 rounded-lg text-center cursor-pointer"
+            className="w-full max-w-sm mx-auto p-13 mt-15 mb-6 border-2 border-dashed border-blue-500 bg-gray-900 rounded-lg text-center cursor-pointer"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
@@ -92,10 +92,10 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </div>
 
           {fileName && (
-            <p className="mb-4 mt-10 text-md text-gray-400 font-semibold">Filename: {fileName} ✅</p>
+            <p className="mt-6 text-md text-gray-400 font-semibold">Filename: {fileName} ✅</p>
           )}
 
-          <div className="flex justify-center items-center gap-3 mb-10 mt-10">
+          <div className="flex justify-center items-center gap-3 mb-10 mt-6">
             <label
               htmlFor="fileInput"
               className="cursor-pointer inline-block px-4 py-2 text-sm font-semibold text-white rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90"
@@ -112,7 +112,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 mt-20 mb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 mt-15 mb-10">
             <textarea
               className="w-full h-50 sm:h-96 py-2 px-4 text-gray-50 border-2 border-blue-500 rounded resize-none"
               placeholder="Enter technical skills (comma or newline)..."
@@ -128,7 +128,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </div>
 
           <button
-            className="w-full max-w-[150px] mx-auto px-6 mt-12 py-1 text-lg sm:text-xl font-semibold rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90 transition-all duration-200"
+            className="w-full max-w-[150px] mx-auto px-6 mt-6 py-1 text-lg sm:text-xl font-semibold rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90 transition-all duration-200"
             disabled={isSubmitting}
           >
             Submit
