@@ -91,7 +91,6 @@ def extract_scores(raw_response):
         soft_match = re.search(r'SOFT:\s*(\d+)', raw_response)
         final_match = re.search(r'FINAL:\s*(\d+)', raw_response)
 
-<<<<<<< HEAD
         tech_score = int(tech_match.group(1)) if tech_match else 0
         soft_score = int(soft_match.group(1)) if soft_match else 0
         final_score = int(final_match.group(1)) if final_match else 0
@@ -114,19 +113,6 @@ def extract_scores(raw_response):
 def health_check():
     return "OK", 200
 
-=======
-# Testpoint home
-@app.route('/')
-def home():
-    return "Welcome to the Resume Analyzer!"
-
-# Testpoint health
-@app.route('/health')
-def health_check():
-    return "OK", 200
-
-# Flask route to handle file + keyword upload
->>>>>>> d29ba8c820c0e3c35aecea0882b8e12f4b447091
 @app.route('/analyze', methods=['POST'])
 def analyze_resume():
     resume_file = request.files.get('resume')
@@ -157,10 +143,5 @@ def analyze_resume():
 })
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     port = int(os.environ.get("PORT", 5000))  # use 5000 as fallback for local dev
     app.run(host="0.0.0.0", port=port, debug=True)
-=======
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=10000, debug=True)
->>>>>>> d29ba8c820c0e3c35aecea0882b8e12f4b447091
