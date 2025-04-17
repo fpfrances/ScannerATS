@@ -3,8 +3,7 @@ import { useState, useRef } from 'react';
 export const Home = ({ handleSubmit, result, setResult }) => {
   const [fileName, setFileName] = useState(null);
   const inputRef = useRef();
-  const [techKeywords, setTechKeywords] = useState('');
-  const [softKeywords, setSoftKeywords] = useState('');
+  const [jobDescription, setJobDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFile = (file) => {
@@ -31,28 +30,24 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
     const formData = new FormData();
     formData.append('resume', file);
-    formData.append('tech_keywords', techKeywords);
-    formData.append('soft_keywords', softKeywords);
+    formData.append('job_description', jobDescription); // Text area for job description
 
     try {
-      const response = await fetch('https://ats-scanner-9akh.onrender.com/analyze', {
+      const response = await fetch('http://localhost:5000/analyze', {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
 
-      if (response.ok && data.technical !== undefined && data.soft !== undefined && data.score !== undefined) {
-        setResult({
-          technical: data.technical,
-          soft: data.soft,
-          final: data.score
-        });
-        handleSubmit({
-          technical: data.technical,
-          soft: data.soft,
-          final: data.score
-        });
+      if (response.ok && data.technical_score !== undefined && data.soft_score !== undefined && data.final_score !== undefined)
+        { const resultObj = {
+          technical: data.technical_score,
+          soft: data.soft_score,
+          final: data.final_score,
+        };
+        setResult(resultObj);
+        handleSubmit(resultObj);
       } else {
         alert('Invalid response from server.');
         console.error("Invalid response:", data);
@@ -73,15 +68,17 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
       <form className="w-full max-w-5xl" onSubmit={onSubmit}>
         <div className="text-center">
-        <p className="mb-7 mt-7">
-          This resume evaluation tool uses a language model(through the LlamaIndex framework and OpenAI’s GPT) to simulate how an ATS might evaluate your resume.
-          Although it doesn’t exactly replicate corporate ATS systems, it offers a reliable estimate of how well your resume aligns with a job description
-          in terms of both technical and soft skills. To achieve optimal results, I recommend using AI to extract both technical and soft skills from a job/qualification description,
-          paste the essential technical and soft skills into the designated fields. Each skill should be input either individually, separated by a comma, or listed on a new line.
+          <p className="mb-8 mt-4">
+          This resume evaluation tool uses a language model(through LlamaIndex framework and OpenAI’s GPT) to simulate how an Applicant Tracking System(ATS) might evaluate your resume.
+          Although it doesn’t exactly replicate corporate ATS systems, it provides a reliable estimate of how well your resume aligns with a job descriptions
+          focusing on both technical and soft skills. To achieve optimal results, upload your resume as a PDF, paste the full job and qualifications description. The tool will extract
+          technical and soft skills from the job description using AI, analyze your resume for matches against those skills, and provide a score based on the matches. This gives you a clear
+          view of how your resume might perform in an AI-based hiring process.
           </p>
+          <p className="font-semibold">Note: The final score weights technical skills a bit more heavily than soft skills, as technical alignment is often a key factor in automated resume screenings.</p>
 
           <div
-            className="w-full max-w-sm mx-auto p-13 mt-15 mb-6 border-2 border-dashed border-blue-500 bg-gray-900 rounded-lg text-center cursor-pointer"
+            className="w-full max-w-sm mx-auto p-13 mt-20 mb-6 border-2 border-dashed border-blue-500 bg-gray-900 rounded-lg text-center cursor-pointer"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
@@ -92,10 +89,10 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </div>
 
           {fileName && (
-            <p className="mt-6 text-md text-gray-400 font-semibold">Filename: {fileName} ✅</p>
+            <p className="mb-4 mt-10 text-md text-gray-400 font-semibold">Filename: {fileName} ✅</p>
           )}
 
-          <div className="flex justify-center items-center gap-3 mb-10 mt-6">
+          <div className="flex justify-center items-center gap-3 mb-10 mt-10">
             <label
               htmlFor="fileInput"
               className="cursor-pointer inline-block px-4 py-2 text-sm font-semibold text-white rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90"
@@ -112,23 +109,17 @@ export const Home = ({ handleSubmit, result, setResult }) => {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 mt-15 mb-10">
+          <div className="mt-10 mb-10">
             <textarea
               className="w-full h-50 sm:h-96 py-2 px-4 text-gray-50 border-2 border-blue-500 rounded resize-none"
-              placeholder="Enter technical skills (comma or newline)..."
-              value={techKeywords}
-              onChange={(e) => setTechKeywords(e.target.value)}
-            />
-            <textarea
-              className="w-full h-50 sm:h-96 py-2 px-4 text-gray-50 border-2 border-green-600 rounded resize-none"
-              placeholder="Enter soft skills (comma or newline)..."
-              value={softKeywords}
-              onChange={(e) => setSoftKeywords(e.target.value)}
+              placeholder="Paste job or qualification description here..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
             />
           </div>
 
           <button
-            className="w-full max-w-[150px] mx-auto px-6 mt-6 py-1 text-lg sm:text-xl font-semibold rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90 transition-all duration-200"
+            className="w-full max-w-[150px] mx-auto px-6 mt-2 py-1 text-lg sm:text-xl font-semibold rounded-full bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90 transition-all duration-200"
             disabled={isSubmitting}
           >
             Submit

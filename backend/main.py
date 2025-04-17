@@ -1,13 +1,14 @@
 import os
 import re
 from dotenv import load_dotenv
+from config import API_KEY
 from llama_index.llms.openai import OpenAI
-from llama_index.core import VectorStoreIndex, Document
 from PyPDF2 import PdfReader
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
+
 API_KEY = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
@@ -19,94 +20,73 @@ def extract_text_from_pdf(pdf_file):
         text = "".join(page.extract_text() or "" for page in reader.pages)
         return text
     except Exception as e:
-        print("Error extracting text:", e)
         return ""
 
-def build_index(keywords):
-    return VectorStoreIndex.from_documents([Document(text=kw) for kw in keywords])
+def extract_skills_from_job_description(job_description):
+    prompt = f"""
+You are an AI assistant helping extract information from job postings.
 
-def normalize_score(raw_score):
-    try:
-        match = re.search(r'\d+(\.\d+)?', raw_score)
-        if match:
-            value = float(match.group())
-            return f"{min(max(value, 0), 100):.0f}"
-    except Exception as e:
-        print("Score normalization error:", e)
-    return "0"
+Given this job description:
+\"\"\" 
+{job_description} 
+\"\"\" 
 
-def calculate_score_with_index(resume_text, index, role_data):
-    resume_text = resume_text.lower()
-    tech_keywords = [kw.lower() for kw in role_data.get("technical_skills", [])]
-    soft_keywords = [kw.lower() for kw in role_data.get("soft_skills", [])]
+Return a JSON object with two lists:
+- "technical_skills": technical/hard skills or tools (e.g., Python, databases, Docker)
+- "soft_skills": soft/interpersonal skills (e.g., communication, problem-solving)
 
-    cleaned_resume = re.sub(r'[^a-zA-Z0-9\s]', '', resume_text)
-    resume_words = set(cleaned_resume.split())
-
-    query = f"""
-    Resume: {resume_text[:4000]}
-
-    Analyze this resume and calculate match percentage (0-100) using:
-    - TECHNICAL SKILLS ({', '.join(tech_keywords)})
-    - SOFT SKILLS ({', '.join(soft_keywords)})
-
-    Scoring Rules:
-    1. Technical matches (65%): out of {len(tech_keywords)}
-    2. Soft skills matches (35%): out of {len(soft_keywords)}
-
-    Output the results in this format only:
-    TECH: [percentage]%
-    SOFT: [percentage]%
-    FINAL: [score]
-    """
+Format:
+{{
+  "technical_skills": [...],
+  "soft_skills": [...],
+}} 
+Only return the JSON, nothing else.
+"""
 
     try:
-        llm = OpenAI(model="gpt-3.5-turbo")
-        query_engine = index.as_query_engine(llm=llm)
-        response = query_engine.query(query)
-        raw = response.response.strip()
-        print("LLM Raw Response:", raw)
-
-        # Parse values
-        tech_match = re.search(r'TECH:\s*(\d+)', raw)
-        soft_match = re.search(r'SOFT:\s*(\d+)', raw)
-        final_match = re.search(r'FINAL:\s*(\d+)', raw)
-
-        return {
-            "technical": int(tech_match.group(1)) if tech_match else 0,
-            "soft": int(soft_match.group(1)) if soft_match else 0,
-            "final": int(final_match.group(1)) if final_match else 0
-        }
+        llm = OpenAI(model="gpt-3.5-turbo",api_key=API_KEY,temperature=0)
+        response = llm.complete(prompt=prompt, max_tokens=300)
+        skills = eval(response.text.strip())  # Evaluating the response as a Python dictionary
+        technical_skills = skills.get("technical_skills", [])
+        soft_skills = skills.get("soft_skills", [])
+        
+        return technical_skills, soft_skills
     except Exception as e:
-        print("LLM error:", e)
-        return {
-            "technical": 0,
-            "soft": 0,
-            "final": 0
-        }
-    
-def extract_scores(raw_response):
-    try:
-        tech_match = re.search(r'TECH:\s*(\d+)', raw_response)
-        soft_match = re.search(r'SOFT:\s*(\d+)', raw_response)
-        final_match = re.search(r'FINAL:\s*(\d+)', raw_response)
+        return [], []
 
-        tech_score = int(tech_match.group(1)) if tech_match else 0
-        soft_score = int(soft_match.group(1)) if soft_match else 0
-        final_score = int(final_match.group(1)) if final_match else 0
+def normalize(text):
+    # Lowercase and replace hyphens with spaces
+    text = text.lower().replace('-', ' ')
+    # Keep alphanumeric characters and '+' (for C++) and spaces
+    text = re.sub(r'[^\w\s\+]', '', text)
+    # Replace multiple spaces with one
+    return re.sub(r'\s+', ' ', text).strip()
 
-        return {
-            "technical": tech_score,
-            "soft": soft_score,
-            "final": final_score
-        }
-    except Exception as e:
-        print("Score parsing error:", e)
-        return {
-            "technical": 0,
-            "soft": 0,
-            "final": 0
-        }
+def calculate_individual_scores(resume_text, tech_keywords, soft_keywords):
+    resume_clean = normalize(resume_text)
+
+    def match_keywords(resume, keywords):
+        matches = []
+        for kw in keywords:
+            kw_clean = normalize(kw)
+            # Look for full match using simple string check
+            if kw_clean in resume:
+                matches.append(kw)
+        return matches
+
+    tech_matches = match_keywords(resume_clean, tech_keywords)
+    soft_matches = match_keywords(resume_clean, soft_keywords)
+
+    tech_score = len(tech_matches) / len(tech_keywords) * 100 if tech_keywords else 0
+    soft_score = len(soft_matches) / len(soft_keywords) * 100 if soft_keywords else 0
+
+    final_score = tech_score * 0.65 + soft_score * 0.35
+
+    return round(tech_score), round(soft_score), round(final_score), tech_matches, soft_matches
+
+@app.route('/')
+def home():
+    return "Welcome to the Resume Analyzer!"
 
 # Testpoint health
 @app.route('/health')
@@ -116,31 +96,43 @@ def health_check():
 @app.route('/analyze', methods=['POST'])
 def analyze_resume():
     resume_file = request.files.get('resume')
-    tech_keywords = request.form.get('tech_keywords')
-    soft_keywords = request.form.get('soft_keywords')
+    job_text = request.form.get('job_description')
 
-    if not (resume_file and tech_keywords and soft_keywords):
-        return jsonify({'error': 'Missing file or keywords'}), 400
+    if not job_text or not resume_file:
+        return jsonify({'error': 'Missing resume or job description'}), 400
 
-    tech_list = [kw.strip() for kw in re.split(r'[,\n]', tech_keywords) if kw.strip()]
-    soft_list = [kw.strip() for kw in re.split(r'[,\n]', soft_keywords) if kw.strip()]
-
-    role_data = {
-        "technical_skills": tech_list,
-        "soft_skills": soft_list
-    }
-
-    index = build_index(tech_list + soft_list)
+    tech_keywords, soft_keywords = extract_skills_from_job_description(job_text)
     resume_text = extract_text_from_pdf(resume_file)
-    score_data = calculate_score_with_index(resume_text, index, role_data)
+
+    # Print extracted technical and soft skills for backend testing
+    print("Technical Skills:")
+    for skill in tech_keywords:
+        print(f"- {skill}")
+
+    print("\nSoft Skills:")
+    for skill in soft_keywords:
+        print(f"- {skill}")
+
+    tech_score, soft_score, final_score, matched_tech, matched_soft = calculate_individual_scores(
+        resume_text, tech_keywords, soft_keywords
+    )
     
-    print("Backend response:", score_data)
+    # Print matched technical and soft skills (comma-separated) for backend testing
+    print("\nMatched Technical Skills in Resume:")
+    print(", ".join(matched_tech))
+
+    print("\nMatched Soft Skills in Resume:")
+    print(", ".join(matched_soft))
 
     return jsonify({
-    "technical": score_data["technical"],
-    "soft": score_data["soft"],
-    "score": score_data["final"]
-})
+        "technical_score": tech_score,
+        "soft_score": soft_score,
+        "final_score": final_score,
+        "extracted_technical_skills": tech_keywords,
+        "extracted_soft_skills": soft_keywords,
+        "matched_technical_skills": matched_tech,
+        "matched_soft_skills": matched_soft
+    })
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # use 5000 as fallback for local dev
