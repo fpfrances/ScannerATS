@@ -33,7 +33,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
     formData.append('job_description', jobDescription); // Text area for job description
 
     try {
-      const response = await fetch('http://localhost:5000/analyze', {
+      const response = await fetch('https://ats-scanner-9akh.onrender.com/analyze', {
         method: 'POST',
         body: formData,
       });
