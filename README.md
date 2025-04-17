@@ -1,5 +1,7 @@
 # ATS Scanner
 
+🔗 **Live Demo:** [View the ATS Scanner Website](https://fpfrances.github.io/ScannerATS/)
+
 ATS Scanner is a web-based resume analysis tool that helps employers assess candidates by comparing resumes against job role requirements. It uses machine learning techniques to score resumes based on technical and soft skills, ensuring a better match between candidates and job roles.
 
 ## Frontend Setup with Vite
