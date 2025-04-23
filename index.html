@@ -9,5 +9,34 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- 🛡️ Protection Scripts Start -->
+
+    <!-- Console Warning -->
+    <script>
+      console.warn('%c🚫 STOP!', 'color: red; font-size: 2rem; font-weight: bold;');
+      console.warn('%cThis project was created by Filipe Pestana Frances. Do not copy or use this source code without proper permission.', 'font-size: 1rem; color: orange;');
+    </script>
+
+    <!-- Hostname Protection -->
+    <script>
+      const allowedHosts = ['fpfrances.github.io', 'localhost'];
+      if (!allowedHosts.includes(window.location.hostname)) {
+        document.body.innerHTML = `
+          <div style="text-align:center; padding: 5rem; font-family: sans-serif;">
+            <h1>⚠️ Unauthorized Use Detected</h1>
+            <p>This project is protected and may not be hosted or reused without permission from <strong>fpfrances</strong>.</p>
+          </div>
+        `;
+        console.error("Unauthorized host:", window.location.hostname);
+      }
+    </script>
+
+    <!-- Footer Ownership Notice -->
+    <footer style="text-align: center; padding: 1rem; font-size: 0.9rem; color: #888;">
+      &copy; 2025 <strong>Filipe Pestana Frances</strong> — Unauthorized copying or hosting is prohibited.
+    </footer>
+
+    <!-- 🛡️ Protection Scripts End -->
   </body>
 </html>
