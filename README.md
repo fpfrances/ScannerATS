@@ -6,7 +6,7 @@ ATS Scanner is a web-based resume analysis tool that helps employers assess cand
 
 > ⚠️ **Disclaimer & License**
 >
-> This project was created by **fpfrances** and is protected under the [MIT License](LICENSE) *(or choose another license if you prefer)*. Unauthorized reproduction, redistribution, or claiming of this work as your own — including but not limited to hosting, copying, or linking — is strictly prohibited without explicit attribution or consent.
+> This project was created by **Filipe Pestana Frances** and is protected under the [MIT License](LICENSE). Unauthorized reproduction, redistribution, or claiming of this work as your own — including but not limited to hosting, copying, or linking — is strictly prohibited without explicit attribution or consent.
 >
 > If you found this project useful or would like to use it for learning purposes, please provide proper credit. Misuse may result in takedown requests, academic penalties, or DMCA action.
 
