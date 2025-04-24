@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-
+import { FaLinkedin, FaGithub } from 'react-icons/fa';
 export const Home = ({ handleSubmit, result, setResult }) => {
   const [fileName, setFileName] = useState(null);
   const inputRef = useRef();
@@ -156,6 +156,11 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </p>
         </div>
       )}
+      <div className="mt-25 flex justify-center items-center gap-5">
+        <a href="https://www.linkedin.com/in/filipefrances/" target="_blank">
+        <FaLinkedin className="text-3xl text-blue-500 hover:text-blue-600 transition" />
+        </a>
+      </div>
     </section>
   );
 };
