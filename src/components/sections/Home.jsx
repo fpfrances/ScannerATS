@@ -63,7 +63,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
   return (
     <section className="min-h-screen flex flex-col items-center justify-start px-4 bg-black text-white">
       <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-green-600 bg-clip-text text-transparent mb-10 mt-10">
-        ATS Scanner
+      AI-Powered ATS Resume Scanner
       </h1>
 
       <form className="w-full max-w-5xl" onSubmit={onSubmit}>
@@ -111,7 +111,8 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
           <div className="mt-10 mb-10">
             <textarea
-              className="w-full h-50 sm:h-96 py-2 px-4 text-gray-50 border-2 border-blue-500 rounded resize-none"
+              className="w-full h-50 sm:h-96 py-2 px-4 text-gray-50 border-2 border-blue-500 rounded-2xl resize-none transition 
+                        focus:outline-none hover:shadow-[0_0_40px_rgba(234,179,8,0.4)]"
               placeholder="Paste job or qualification description here..."
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
