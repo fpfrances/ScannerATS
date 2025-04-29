@@ -63,7 +63,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-start px-4 bg-black text-white">
+    <section className="min-h-screen overflow-y-scroll no-scrollbar flex flex-col items-center justify-start px-4 bg-black text-white">
       <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-green-600 bg-clip-text text-transparent mb-10 mt-10">
       AI-Powered ATS Resume Scanner
       </h1>
