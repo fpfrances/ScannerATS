@@ -42,6 +42,8 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
       if (response.ok && data.technical_score !== undefined && data.soft_score !== undefined && data.final_score !== undefined)
         { const resultObj = {
+          techMatch: data.matched_technical_skills,
+          softMatch: data.matched_soft_skills,
           technical: data.technical_score,
           soft: data.soft_score,
           final: data.final_score,
@@ -75,7 +77,6 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           technical and soft skills from the job description using AI, analyze your resume for matches against those skills, and provide a score based on the matches. This gives you a clear
           view of how your resume might perform in an AI-based hiring process.
           </p>
-          <p className="font-semibold">Note: The final score weights technical skills a bit more heavily than soft skills, as technical alignment is often a key factor in automated resume screenings.</p>
 
           <div
             className="w-full max-w-sm mx-auto p-13 mt-20 mb-6 border-2 border-dashed border-blue-500 bg-gray-900 rounded-lg text-center cursor-pointer"
@@ -136,16 +137,18 @@ export const Home = ({ handleSubmit, result, setResult }) => {
 
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-lg text-black font-medium mb-2">📊 Score Breakdown</h2>
-            <ul className="list-disc list-inside text-gray-700">
+            <ul className="list-disc text-center list-inside text-gray-700">
               <li><strong>Technical Skills Match:</strong> {result.technical}%</li>
+              <li><strong>Matched Technical Skills:</strong> {(result.techMatch) ? result.techMatch.join(', ') : result.techMatch || 'None found'}</li><br></br>
               <li><strong>Soft Skills Match:</strong> {result.soft}%</li>
-              <li className="text-blue-600">The final score balances both skill types.</li>
+              <li><strong>Matched Soft Skills:</strong> {(result.softMatch) ? result.softMatch.join(', ') : result.softMatch || 'None found'}</li><br></br>
+              <li className="text-blue-600">Since technical alignment is frequently a crucial component in automated resume screenings, technical skills are given a slightly higher weight in the final score than soft skills.</li>
             </ul>
           </div>
 
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-lg text-black font-medium mb-2">🔍 Tips to Improve</h2>
-            <ul className="list-disc text-left list-inside text-gray-700">
+            <ul className="list-disc text-center list-inside text-gray-700">
               <li>Include more relevant keywords from the job description.</li>
               <li>Use clear, action-based language and metrics.</li>
               <li>Tailor your resume per job application.</li>
@@ -157,7 +160,7 @@ export const Home = ({ handleSubmit, result, setResult }) => {
           </p>
         </div>
       )}
-      <div className="mt-25 flex justify-center items-center gap-5">
+      <div className="mt-25 translate-y-10 flex justify-center items-center gap-5">
         <a href="https://www.linkedin.com/in/filipefrances/" target="_blank">
         <FaLinkedin className="text-3xl text-blue-500 hover:text-blue-600 transition" />
         </a>
